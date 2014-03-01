@@ -7,6 +7,7 @@ var lg = require('levelgraph');
 var lgJSONLD = require('levelgraph-jsonld');
 var _ = require('lodash');
 var async = require('async');
+var oembed = require('oembed-auto');
 
 var db = lgJSONLD(lg('dev.ldb'));
 
@@ -15,7 +16,6 @@ daemon.use(cors({ origin: true, credentials: true }));
 daemon.use(express.bodyParser());
 daemon.use(express.cookieParser('Thalugnesfit0drowAbJaskEbyocyut'));
 daemon.use(express.cookieSession({ secret: 'RovFosithyltyojdykCadWysdurt2onn' })); //FIXME CSRF
-
 
 daemon.post('/auth/login', function(req, res){
   request.post('https://verifier.login.persona.org/verify')
@@ -29,17 +29,18 @@ daemon.post('/auth/login', function(req, res){
       req.session.agent = vres.body;
 
       res.json(vres.body);
-
-      // debug
-      console.log(req.session);
     });
 });
 
 daemon.post('/auth/logout', function(req, res){
-  console.log(req.body.assertion); //FIXME decide if needs assertion
-  console.log(req.session); //debug
   req.session = null;
   res.send(200);
+});
+
+daemon.post('/oembed', function(req, res){
+  oembed(req.body.url, function(err, data){
+    res.end(data.html);
+  });
 });
 
 var context = JSON.parse(fs.readFileSync('unmonastery.jsonld').toString());
@@ -47,19 +48,36 @@ var context = JSON.parse(fs.readFileSync('unmonastery.jsonld').toString());
 function savePerson (req, res){
   var person = req.body;
   if(req.session.agent.email === person.email){
-    person['@context'] = context;
     db.jsonld.del(context['@base'] + person['@id'], function(err){
       if(err) return console.error(err);
       db.jsonld.put(person, function(err){
         if(err) return console.error(err);
-        console.log('SAVED:', person);
         res.send(200);
       });
     });
   } else {
-    console.log('REJECTED:', req.body);
     res.send(403);
   }
+}
+
+function saveProject (req, res){
+  var project = req.body;
+  var id = context['@base'] + project['@id'];
+  db.jsonld.get(id, context, function(err, proj){
+    db.jsonld.get(context['@base'] + proj.founder, context, function(err, founder){
+      if(req.session.agent.email === founder.email){ // FIXME suport multiple founders
+        db.jsonld.del(id, function(err){
+          if(err) return console.error(err);
+          db.jsonld.put(project, function(err){
+            if(err) return console.error(err);
+            res.send(200);
+          });
+        });
+      } else {
+        res.send(403);
+      }
+    });
+  });
 }
 
 // FIXME !!!DRY!!!
@@ -97,7 +115,6 @@ daemon.get('/projects', function(req, res){
 
 daemon.get('/people/:part', function(req, res){
   var id = 'http://unmonastery.net/people/' + req.params.part;
-  console.log(id);
   db.jsonld.get(id, { '@context': context }, function(err, obj){
     res.json(obj);
   });
@@ -105,6 +122,8 @@ daemon.get('/people/:part', function(req, res){
 daemon.post('/people/:part', savePerson);
 daemon.put('/people/:part', savePerson);
 
+daemon.post('/projects/:part', saveProject);
+daemon.put('/projects/:part', saveProject);
 
 var server = http.createServer(daemon);
 server.listen(9000);

@@ -1,23 +1,55 @@
 $(function(){
 
-  Handlebars.registerHelper('md', function(content){
-    return markdown.toHTML(content);
+  window.lang = 'en';
+
+  Handlebars.registerHelper('tmd', function(content){
+    if(content[lang]) {
+      return markdown.toHTML(content[lang]);
+    } else {
+      return 'no content yet :(';
+    }
+  });
+
+  Handlebars.registerHelper('l', function(path){
+    return '/' + window.lang + '/' + path;
   });
 
   var Person = Backbone.Model.extend({
     idAttribute: '@id',
 
+    defaults: {
+      description: {}
+    },
+
     initialize: function(){
-      _.bindAll(this, 'setAvatar');
+      _.bindAll(this, 'setAvatar', 'setOembed');
       this.on('change:description', this.save);
+      this.on('change:video', this.save);
+      this.on('change:video', this.setOembed);
       this.on('change:email', this.setAvatar);
       if(this.get('email')){
         this.setAvatar();
+      }
+      if(this.get('video')){
+        this.setOembed();
       }
     },
 
     setAvatar: function(){
       this.set('image', 'http://gravatar.com/avatar/' + md5(this.get('email')));
+    },
+
+    setOembed: function(){
+      if(this.get('video')){
+        superagent.post('http://localhost:9000/oembed')
+        .send({ url: this.get('video') })
+        .end(function(response){
+          var scaled = response.text.replace('width="1280"', 'width="640"').replace('height="720"', 'height="360"');
+          this.set('oembed', scaled);
+        }.bind(this));
+      } else {
+        this.unset('oembed');
+      }
     },
 
     //FIXME override Backbone.sync
@@ -45,17 +77,39 @@ $(function(){
   var Project = Backbone.Model.extend({
     idAttribute: '@id',
 
+    defaults: {
+      description: {}
+    },
+
     initialize: function(){
-      _.bindAll(this, 'setAvatar');
+      _.bindAll(this, 'setAvatar', 'setOembed');
       this.on('change:description', this.save);
       this.on('change:email', this.setAvatar);
+      this.on('change:video', this.save);
+      this.on('change:video', this.setOembed);
       if(this.get('email')){
         this.setAvatar();
+      }
+      if(this.get('video')){
+        this.setOembed();
       }
     },
 
     setAvatar: function(){
       this.set('image', 'http://gravatar.com/avatar/' + md5(this.get('email')));
+    },
+
+    setOembed: function(){
+      if(this.get('video')){
+        superagent.post('http://localhost:9000/oembed')
+        .send({ url: this.get('video') })
+        .end(function(response){
+          var scaled = response.text.replace('width="1280"', 'width="640"').replace('height="720"', 'height="360"');
+          this.set('oembed', scaled);
+        }.bind(this));
+      } else {
+        this.unset('oembed');
+      }
     },
 
     //FIXME override Backbone.sync
@@ -83,11 +137,14 @@ $(function(){
 
   var Router = Backbone.Router.extend({
     routes: {
-      '': 'root',
-      'people': 'people',
-      'people/:part': 'person',
-      'projects': 'projects',
-      'projects/:part': 'project'
+      ':lang': 'root',
+      ':lang/people': 'people',
+      ':lang/people/:part': 'person',
+      ':lang/projects': 'projects',
+      ':lang/projects/:part': 'project',
+    },
+
+    root: function(lang){
     },
 
     people: function(){
@@ -95,7 +152,7 @@ $(function(){
       this.stretchIndex();
     },
 
-    person: function(part){
+    person: function(lang, part){
       var profile = new Profile({ model: crew.findWhere({'@id': 'people/' + part}) });
       var sideNav = new SideNav({ collection: crew });
       this.removeIndex();
@@ -106,7 +163,7 @@ $(function(){
       this.stretchIndex();
     },
 
-    project: function(part){
+    project: function(lang, part){
       var profile = new Profile({ model: projects.findWhere({'@id': 'projects/' + part}) });
       var sideNav = new SideNav({ collection: projects });
       this.removeIndex();
@@ -134,12 +191,34 @@ $(function(){
   Backbone.history.start({ pushState: true });
 
   var router = new Router();
+  router.navigate(window.lang, { trigger: true });
 
   var Nav = Backbone.View.extend({
     el: '.nav',
 
+    structure: {
+      en: {
+        root: { url: '/en' },
+        people: { url: '/en/people', label: 'People'},
+        projects: { url: '/en/projects', label: 'Projects'}
+      },
+      it: {
+        root: { url: '/it' },
+        people: { url: '/it/people', label: 'Persone'},
+        projects: { url: '/it/projects', label: 'Progetti'}
+      }
+    },
+
     events: {
       'click': 'navigate'
+    },
+
+    initialize: function(){
+      this.render();
+    },
+
+    render: function(){
+      this.$el.html(JST.nav(this.structure[window.lang]));
     },
 
     navigate: function(event){
@@ -153,6 +232,47 @@ $(function(){
   });
 
   var nav = new Nav();
+
+  function getLangPath(lang){
+    var pathElements = Backbone.history.location.pathname.split('/');
+    pathElements[1] = lang;
+    return pathElements.join('/');
+  }
+
+  function getLang(href){
+    return href.split('/')[1];
+  }
+
+  var LangSwitch = Backbone.View.extend({
+    el: '.language',
+
+    events: {
+      'click': 'switch'
+    },
+
+    initialize: function(){
+      _.bindAll(this, 'render');
+      this.render();
+      router.on('route', this.render);
+    },
+
+    render: function(){
+      this.$el.html(JST.langSwitch({
+        en: getLangPath('en'),
+        it: getLangPath('it')
+      }));
+    },
+
+    switch: function(event){
+      event.preventDefault();
+      var lang = getLang($(event.target).attr('href'));
+      window.lang = lang;
+      nav.render();
+      router.navigate(getLangPath(lang).replace(/^\//, ''), { trigger: true });
+    }
+  });
+
+  var langSwitch = new LangSwitch();
 
   var AgentMenu = Backbone.View.extend({
     el: '#agentMenu',
@@ -242,13 +362,16 @@ $(function(){
 
     initialize: function(){
       _.bindAll(this, 'render');
+      this.model.on('change:oembed remove:oembed', this.render);
       this.render();
     },
 
     render: function(){
       var partial = JST.profile(this.model.toJSON());
       this.$el.html(partial);
-      if(this.model.attributes.email === agent.attributes.email){
+      if(this.model.get('email') === agent.get('email') ||
+         this.model.get('founder') === agent.get('@id')) { //FIXME support for multiple founders
+        // edit description
         var description = this.$el.find('[property=description]');
         var editor = $('<textarea style="width: 100%; height: 12em;"></textarea>');
         description.bind('click', function(event){
@@ -258,14 +381,32 @@ $(function(){
           }
           $(description).empty();
           $(description).append(editor);
-          $(editor).val(this.model.get('description'));
+          $(editor).val(this.model.get('description')[lang]);
           $(editor).focus();
         }.bind(this));
         editor.bind('blur', function(){
           var marked = editor.val();
-          this.model.set('description', marked);
+          this.model.get('description')[lang] = marked;
+          this.model.trigger('change:description');
           $(editor).detach();
           $(description).html(markdown.toHTML(marked));
+        }.bind(this));
+
+        // edit video
+        var video = this.$el.find('.video');
+        video.attr('contenteditable', true);
+        video.bind('blur', function(){
+          var url = video.find('a').attr('href');
+          if(url){
+            this.model.set('video', url);
+          } else {
+            url = video.html().replace(/^\s+|\s+$/g, '').replace(/^<.*>|<.*>$/g, '');
+            if(url.match(/^http[s]*:\/\//)){
+              this.model.set('video', url);
+            } else {
+              this.model.unset('video');
+            }
+          }
         }.bind(this));
       }
     }
@@ -278,11 +419,11 @@ $(function(){
   window.un = {
     agent: agent,
     crew: crew,
+    projects: projects,
     router: router
   };
 
   var login = function(assertion){
-    agent.assertion = assertion;
     superagent.post('http://localhost:9000/auth/login')
     .withCredentials()
     .send({ assertion: assertion })
@@ -291,6 +432,10 @@ $(function(){
       console.log('Persona.onlogin()', data);
       agent.set(data);
       agent.set('authenticated', true);
+      var crewMember = crew.findWhere({ email: agent.get('email') });
+      if(crewMember){
+        agent.set('@id', crewMember.get('@id'));
+      }
     });
   };
 
@@ -298,7 +443,6 @@ $(function(){
     // FIXME decide if needs to sent assertion!
     superagent.post('http://localhost:9000/auth/logout')
     .withCredentials()
-    .send({ assertion: agent.assertion })
     .end(function(response){
       console.log('Persona.onlogout()', response);
       agent.set('authenticated', false);
