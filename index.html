@@ -10,7 +10,7 @@
 
     <!--[if IE]> <link rel="shortcut icon" href="assets/images/favicon_16x16.ico"><!--<![endif]--> 
 
-    <title>unMonastery: [Project name]</title>
+    <title>unMonastery</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,6 +21,7 @@
     <link href="/styles/main.css" rel="stylesheet">
     <link rel="stylesheet" href="/styles/mailchimp.css">
     <link rel="stylesheet" href="/styles/fontello.css">
+      
 
     <!-- Google Calendar CSS and Javascript -->
     <link type="text/css" rel="stylesheet" href="https://www.google.com/calendar/6fc6789200b5a08b1dfa15d9a43aa711embedcompiled_fastui.css">
@@ -34,6 +35,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
   </head>
 
   <body>
@@ -78,9 +80,21 @@
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
           </p>
 
+
+
           <div id="mailing-list"></div>
 
+
+
           <div id="index"></div>
+
+          <div id="slides">
+            <img src="http://placehold.it/940x528">
+            <img src="http://placehold.it/940x528">
+            <img src="http://placehold.it/940x528">
+            <img src="http://placehold.it/940x528">
+            <img src="http://placehold.it/940x528">
+          </div>
 
           <div id="profile"></div>
 
@@ -120,9 +134,10 @@
       <hr>
 
       <footer>
-        <p><a href="#">Subscribe</a> to our Newsletter <img src="assets/images/unmon_spark.png"> <a href="#">matera@unmonastery.org</a>
+        <p><a href="#">Subscribe</a> to our newsletter<img src="assets/images/unmon_spark.png">
+          <a href="#">matera@unmonastery.org</a>
           <img src="assets/images/unmon_spark.png">
-           Palazzo del Casale, Rioni Sassi (Sasso Barisano), 75100 Matera, Italy</p>
+          Palazzo del Casale, Rioni Sassi (Sasso Barisano), 75100 Matera, Italy</p>
       </footer>
 
     </div><!--/.container-->
@@ -144,5 +159,41 @@
     <script src="https://login.persona.org/include.js"></script>
     <script src="/tmp/templates.js"></script>
     <script src="/app.js"></script>
+    <!-- jQuery Slider -->
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/vendor/js/slides/jquery.slides.min.js"></script>
+
+    <script>
+    $(function(){
+      $("#slides").slidesjs({
+        width: 600,
+        height: 400,
+        play: {
+        active: true,
+          // [boolean] Generate the play and stop buttons.
+          // You cannot use your own buttons. Sorry.
+        effect: "slide",
+          // [string] Can be either "slide" or "fade".
+        interval: 5000,
+          // [number] Time spent on each slide in milliseconds.
+        auto: true,
+          // [boolean] Start playing the slideshow on load.
+        swap: true,
+          // [boolean] show/hide stop and play buttons
+        pauseOnHover: false,
+          // [boolean] pause a playing slideshow on hover
+        restartDelay: 2500
+          // [number] restart delay on inactive slideshow
+        },
+        effect: {
+          slide: {
+        // Slide effect settings.
+            speed: 2500,
+        // [number] Speed in milliseconds of the slide animation.
+          }
+        }
+      });
+    });
+    </script>
   </body>
 </html>
