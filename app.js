@@ -1,6 +1,9 @@
 $(function(){
 
   API_URL = 'http://localhost:9000';
+  /* DO NOT COMMIT THIS LINE 
+  API_URL = 'http://unmonastery.org:9900';*/
+
 
   Handlebars.registerHelper('tmd', function(content){
     if(content[window.lang]) {
