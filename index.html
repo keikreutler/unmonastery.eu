@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" sizes="16x16 32x32 128x128 href="assets/images/favicon_16x16.png">
 
-    <!--[if IE]> <link rel="shortcut icon" href="assets/images/favicon_16x16.ico"><!--<![endif]--> 
+    <!--[if IE]> <link rel="shortcut icon" href="assets/images/favicon_16x16.ico"><![endif]--> 
 
     <title>unMonastery: Matera</title>
 
@@ -22,7 +22,11 @@
     <link rel="stylesheet" href="/styles/mailchimp.css">
     <link rel="stylesheet" href="/styles/fontello.css">
     <link href="/vendor/css/jquery.gcal_flow.css" rel="stylesheet" type="text/css">
-
+ 
+    <!-- CSS for slidesjs example -->
+    <link rel="stylesheet" href="styles/font-awesome.min.css">
+    <link rel="stylesheet" href="styles/slide.css">
+    <!-- End CSS for slidesjs.com example -->
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -104,14 +108,6 @@
 
       <div class="row row-offcanvas row-offcanvas-right">
 
-        <div id="gcf-simple">
-        </div>
-        <script type="text/javascript">
-            $('#gcf-simple').gCalFlow({
-              calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com'
-            });
-        </script>
-
         <div class="main-column col-sm-12"> <!-- col-xs-12 col-sm-9 when sidebar active -->
           <p class="pull-right visible-xs">
             <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
@@ -122,6 +118,15 @@
           </div>
 
           <div id="index"></div>
+
+
+          <div id="gcf-simple">
+          </div>
+          <script type="text/javascript">
+            $('#gcf-simple').gCalFlow({
+              calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com'
+            });
+          </script>
 
           <div id="profile"></div>
 
@@ -177,5 +182,11 @@
     <script src="https://login.persona.org/include.js"></script>
     <script src="/tmp/templates.js"></script>
     <script src="/app.js"></script>
+    <!-- SlidesJS Required: Link to jQuery -->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!-- End SlidesJS Required -->
+    <!-- SlidesJS Required: Link to jquery.slides.js -->
+    <script src="js/jquery.slides.min.js"></script>
+
   </body>
 </html>
