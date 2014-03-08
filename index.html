@@ -21,6 +21,8 @@
     <link href="/styles/main.css" rel="stylesheet">
     <link rel="stylesheet" href="/styles/mailchimp.css">
     <link rel="stylesheet" href="/styles/fontello.css">
+    <link href="/vendor/css/jquery.gcal_flow.css" rel="stylesheet" type="text/css">
+
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -30,6 +32,39 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- gCal widget -->
+    <link href="jquery.gcal_flow.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("jquery", "1.7.1");
+    </script>
+
+    <script>
+      _gCalFlow_debug = true;
+    </script>
+    <script type="text/javascript" src="/vendor/js/jquery.gcal_flow.min.js"></script>
+    <script type="text/javascript">
+      var $ = jQuery;
+      $(function() {
+        $('#gcf-simple').gCalFlow({
+          calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com'
+        });
+        $('#gcf-design').gCalFlow({
+          calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com',
+          maxitem: 10
+        });
+        $('#gcf-custom-template').gCalFlow({
+          calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com',
+          maxitem: 50,
+          mode: 'updates',
+          date_formatter: function(d, allday_p) { return (d.getMonth()+1) + "/" + d.getDate() + "/" + d.getYear().toString().substr(-2) }
+        });
+      });
+    </script>
+    <!-- gCal widget end -->
+
+
   </head>
 
   <body>
@@ -68,6 +103,14 @@
     <div class="container content-container">
 
       <div class="row row-offcanvas row-offcanvas-right">
+
+        <div id="gcf-simple">
+        </div>
+        <script type="text/javascript">
+            $('#gcf-simple').gCalFlow({
+              calid: 'u0mmdikpg6fsae0523i2lda8r0@group.calendar.google.com'
+            });
+        </script>
 
         <div class="main-column col-sm-12"> <!-- col-xs-12 col-sm-9 when sidebar active -->
           <p class="pull-right visible-xs">
