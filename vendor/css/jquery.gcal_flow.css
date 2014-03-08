@@ -1,12 +1,17 @@
+#gcf-simple {
+  display:inline;
+}
+
 .gCalFlow {
   position: relative;
   width: 300px;
-  height: 400px;
+  height: 450px;
   float: left;
   font-size: 90%;
   overflow: hidden;
   text-decoration: none;
-  padding-bottom: 0.5em; }
+  padding-bottom: 0.5em;
+  }
   .gCalFlow a, .gCalFlow a:visited, .gCalFlow a:hover {
     color: inherit;
     _color: black;

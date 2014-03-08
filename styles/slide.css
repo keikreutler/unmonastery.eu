@@ -1,5 +1,7 @@
   .slide-container {
-    max-width: 600px;
+    width: 800px;
+    float:left;
+    margin-right:25px;
   }
 
   .slide {
@@ -30,7 +32,8 @@
   }
 
   #slides .slidesjs-navigation {
-    margin-top:3px;
+    margin-top:15px;
+    margin-bottom:15px;
   }
 
   #slides .slidesjs-previous {
