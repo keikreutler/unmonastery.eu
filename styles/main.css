@@ -232,6 +232,14 @@ hr {
 }
 
 footer img {
-  width: 30px;
-  padding: 0px 5px 0px 5px;
+  height: 20px;
+  margin: 0px 5px 0px 5px;
+}
+
+footer p {
+  font-size:smaller;
+}
+
+#matera2019 {
+  height:40px;
 }
