@@ -265,3 +265,13 @@ footer img {
   padding-top:450px;
   margin-bottom:30px;
 }
+
+#video .col-md-4 {
+  /*background-color: #eee;*/
+  padding:25px;
+}
+
+#video img {
+  width:300px;
+  height:200px;
+}

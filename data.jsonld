@@ -42,6 +42,18 @@
     "email": "marc@mirelsol.org"
   },
   {
+    "@id": "people/lucia-caistor",
+    "@type": "Person",
+    "name": "Lucia Caistor",
+    "email": "luciacaistor@hotmail.co.uk"
+  },
+  {
+    "@id": "people/david-bovill",
+    "@type": "Person",
+    "name": "David Bovill",
+    "email": "david.bovill@gmail.com"
+  },
+  {
     "@id": "projects/unguide",
     "@type": "Organization",
     "name": "unGuide",
@@ -65,7 +77,6 @@
     "name": "Community Interface",
     "founder": "people/cristiano-siri"
   },
-
   {
     "@id": "pages/about",
     "@type": "WebPage"
